@@ -6,4 +6,3 @@ tiktoken
 uvicorn
 python-multipart
 boto3
-chromadb
