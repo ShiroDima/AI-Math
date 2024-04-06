@@ -1,9 +1,9 @@
 import logging
 import os, json
 from typing import Optional, List, Dict, Tuple
-
+from mangum import Mangum
 # from typing import Annotated
-import pandas as pd
+# import pandas as pd
 from dotenv import load_dotenv
 import openai
 
@@ -30,7 +30,6 @@ app.add_middleware(
 )
 
 load_dotenv()
-
 
 # openai.api_key = os.environ["OPENAI_API_KEY"]
 
@@ -104,6 +103,9 @@ async def question_format(question: UserQuestion):
     # formatted_question = format_question(question=question.question)
 
     return formatted_question
+
+
+handler = Mangum(app, lifespan="on")
 
 
 if __name__ == "__main__":
