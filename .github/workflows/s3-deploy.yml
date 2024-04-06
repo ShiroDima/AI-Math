@@ -50,13 +50,13 @@ jobs:
         run: |
           ls $GITHUB_WORKSPACE
 
-#      - name: Upload to S3
-#        uses: jakejarvis/s3-sync-action@master
-#        with:
-#          args: --acl public-read --delete
-#        env:
-#          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET }}
-#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          AWS_REGION: ${{ secrets.AWS_REGION }}
-#          SOURCE_DIR: "$GITHUB_WORKSPACE/ai-math-backend.zip"
+      - name: Upload to S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: "ai-math-backend.zip"
