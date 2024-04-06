@@ -49,7 +49,6 @@ jobs:
       - name: Checks
         run: |
           echo $GITHUB_WORKSPACE
-          ls /github/workspace
 
       - name: Upload to S3
         uses: jakejarvis/s3-sync-action@master
