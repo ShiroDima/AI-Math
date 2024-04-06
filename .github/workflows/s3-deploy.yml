@@ -48,6 +48,7 @@ jobs:
 
       - name: Checks
         run: |
+          echo $GITHUB_WORKSPACE
           ls $GITHUB_WORKSPACE
 
       - name: Upload to S3
