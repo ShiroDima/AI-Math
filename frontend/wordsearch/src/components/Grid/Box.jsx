@@ -1,7 +1,7 @@
 import {useGameContext} from "@/context/GameContext";
 import {useEffect, useState} from "react";
 import {useGridContext} from "@/context/GridContext";
-import validateDirection from "@/lib/check_direction";
+import validateDirection from "@/utils/check_direction";
 
 export const Box = ({letter}) => {
     const {addToCurrentSelection, currentSelection, isMouseDown, setIsMouseDown, resetCurrentSelection, setFoundWords, isNewGame, initRow, changeInitRow, initCol, changeInitCol, direction, setDirection, prevCol, prevRow, changePrevCol, changePrevRow} = useGameContext()
