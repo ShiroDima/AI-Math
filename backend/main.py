@@ -1,7 +1,6 @@
 import logging
 import os, json
 from typing import Optional, List, Dict, Tuple
-from mangum import Mangum
 # from typing import Annotated
 # import pandas as pd
 from dotenv import load_dotenv
@@ -103,9 +102,6 @@ async def question_format(question: UserQuestion):
     # formatted_question = format_question(question=question.question)
 
     return formatted_question
-
-
-handler = Mangum(app, lifespan="on")
 
 
 if __name__ == "__main__":

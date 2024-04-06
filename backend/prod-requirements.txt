@@ -1,5 +1,4 @@
 fastapi
-mangum
 langchain
 openai
 tiktoken
