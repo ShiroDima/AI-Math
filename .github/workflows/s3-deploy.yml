@@ -29,11 +29,22 @@ jobs:
         run: |
           zip -r ai-math-backend.zip .
 
+      - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: deployment
+        path: ai-math-backend.zip
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
+      - name: Download artifact
+          uses: actions/download-artifact@v2
+          with:
+            name: deployment
+
       - name: Upload to S3
         uses: jakejarvis/s3-sync-action@master
         with:
