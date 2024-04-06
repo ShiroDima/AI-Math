@@ -22,7 +22,7 @@ jobs:
         run: |
           cd backend
           python -m venv venv
-          source venv/Scripts/activate
+          source venv/bin/activate
           pip install -r prod-requirements.txt
 
       - name: Zip folder
