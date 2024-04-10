@@ -78,8 +78,10 @@ def create_ai_with_image(image_urls: List[str]):
         {
             'type': 'text',
             'text': """
-                        Think carefully step by step when answering.
-                        Question: {input} and show steps"""
+                        Think carefully step by step when answering. \n \
+                        show explicitly and explain the steps involved in the solution
+                        
+                        Question: {input} """
         }
     ]
 
@@ -110,7 +112,9 @@ def create_ai_with_image(image_urls: List[str]):
                         What is solution to the problem in the image?
                         Give the output in proper latex format only.\n \
                         Make sure all final answers are evaluated if real values are available\n \
-                        All mathematics must be in latex
+                        All mathematics must be in latex. \n \
+                        IF A GRAPH IS PROVIDED TO YOU, ENSURE THAT YOUR ANSWERS ARE DEPENDENT ON WHAT IS SHOWN IN THE GRAPH AND THE QUESTION IN THE IMAGE.  DO NOT ANSWER OFF TRACK \n \
+                        If you do not know the solution to a problem, say so rather than attempting to solve it.
                         """),
             few_shot_prompt,
             HumanMessage(
