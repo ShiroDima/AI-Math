@@ -5,9 +5,8 @@ import Thumbnail from "@/components/Thumbnail.jsx"
 import axios from "axios";
 import {
 	PaperAirplaneIcon,
-	UploadIcon
 } from "@heroicons/react/solid";
-
+import {BounceLoader} from "react-spinners";
 import {PhotographIcon} from "@heroicons/react/outline"
 
 import { useUploadedFileContext } from "@/context/UploadedFileContext.js";
@@ -29,7 +28,7 @@ const ChatRoom = () => {
 	// current uploaded file name
 	const [fileName, setFileName] = useState("");
 	// Show Files
-	const [showFiles, setShowFiles] = useState(true);
+	const [isUploading, setIsUploading] = useState(false);
 
 	// dummy reference just to scroll
 	const dummy = useRef(null);
@@ -37,18 +36,14 @@ const ChatRoom = () => {
 	const formRef = useRef(null);
 	const messageInputRef = useRef(null);
 
+	// useEffect(() => {
+	// 	setMessages([{role: "User", data: "Integral of 2x?"}, {role: "AI", data: ""}])
+	// }, [])
+
 	// Scroll every time as we send the messages
 	useEffect(() => {
 		scrollToBottom();
 	}, [messages]);
-
-	// useEffect(() => {
-	//     if(typeof window?.MathJax !== "undefined"){
-	//         // console.log(window?.MathJax)
-	//         window?.MathJax.typeset()
-	//
-	//     }
-	// }, [messages])
 
 	/* function just to scroll to the bottom to the dummy div */
 	function scrollToBottom() {
@@ -116,27 +111,6 @@ const ChatRoom = () => {
 			}),
 		};
 
-		// axios(config)
-		// 	.then(function (response) {
-		// 		console.log(response.data);
-		// 		response.status === 200
-		// 			? setMessages((prevState) => [
-		// 					...prevState,
-		// 					{
-		// 						role: "AI",
-		// 						data: response.data.answer_content,
-		// 					},
-		// 			  ])
-		// 			: null;
-		// 	})
-		// 	.finally(() => {
-		// 		setSendButton(false);
-		// 		scrollToBottom();
-		// 	})
-		// 	.catch(function (error) {
-		// 		console.log(error);
-		// 	});
-
 		axios(formatConfig)
 			.then((response) => {
 				setMessages((prevState) => [
@@ -170,9 +144,9 @@ const ChatRoom = () => {
 	}
 
 	function uploadImage(formData, file) {
-		// console.log()
+		console.log(isUploading)
 		axios
-			.put(`http://localhost:8000/image_upload`, formData)
+			.put(`http://localhost:5000/image_upload`, formData)
 			.then(function (response) {
 				console.log(response.data);
 				addFileCloud(response.data);
@@ -180,6 +154,7 @@ const ChatRoom = () => {
 			})
 			.finally(() => {
 				document.getElementById('custom-file-picker').value = ""
+				setIsUploading(prev => !prev)
 			})
 			.catch(function (error) {
 				console.log(error);
@@ -247,10 +222,9 @@ const ChatRoom = () => {
 								className={"p-2"}
 								id="custom-file-picker"
 								type={"file"}
-								onInput={(event) => {
+								onChange={(event) => {
+									setIsUploading(true)
 									setFileName(event.target.files[0].name);
-									// console.log(event.target.files[0].name)
-									// addFile(event.target.files[0])
 									let formData = new FormData();
 									formData.append(
 										"image_file",
@@ -261,6 +235,8 @@ const ChatRoom = () => {
 										formData,
 										event.target.files[0]
 									);
+
+									// setIsUploading(prev => !prev)
 								}}
 								hidden
 								accept={"image/png, image/jpeg"}
@@ -269,7 +245,8 @@ const ChatRoom = () => {
 								htmlFor="custom-file-picker"
 								className={"p-2 bg-none cursor-pointer"}
 							>
-								<PhotographIcon className={`w-6 h-6`} />
+								{(isUploading && <BounceLoader size={20} color={"#000"} />)}
+								{!isUploading && <PhotographIcon className={`w-6 h-6`} />}
 							</label>
 						</div>
 
