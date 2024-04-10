@@ -91,7 +91,7 @@ const ChatRoom = () => {
 
 		let config = {
 			method: "post",
-			url: "http://localhost:8000/question",
+			url: "http://localhost:5000/question",
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -106,7 +106,7 @@ const ChatRoom = () => {
 
 		let formatConfig = {
 			method: "post",
-			url: "http://localhost:8000/format",
+			url: "http://localhost:5000/format",
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -142,6 +142,7 @@ const ChatRoom = () => {
 				setMessages((prevState) => [
 					...prevState,
 					{ role: "User", data: response.data },
+					{ role: "AI", data: "" }
 				]);
 			})
 			.finally(() => {
@@ -149,13 +150,12 @@ const ChatRoom = () => {
 					.then(function (response) {
 						console.log(response.data);
 						response.status === 200
-							? setMessages((prevState) => [
-									...prevState,
-									{
-										role: "AI",
-										data: response.data.answer_content,
-									},
-							  ])
+							? setMessages((prevState) => prevState.map((item, idx) => {
+								if(idx===prevState.length-1){
+									return {...item, data: response.data.answer_content}
+								}
+								return item
+							}))
 							: null;
 					})
 					.finally(() => {
@@ -204,22 +204,6 @@ const ChatRoom = () => {
 				uploadImage(formData, event.dataTransfer.files[i]);
 			}
 		}
-	}
-
-	function showUploadedFiles() {
-		showFiles
-			? document
-					.querySelector("#showFilesIcon")
-					.classList.add("rotate-180")
-			: document
-					.querySelector("#showFilesIcon")
-					.classList.remove("rotate-180");
-		showFiles && uploadedFiles.length !== 0
-			? document
-					.querySelector("#uploadedFiles")
-					.classList.remove("hidden")
-			: document.querySelector("#uploadedFiles").classList.add("hidden");
-		setShowFiles(!showFiles);
 	}
 
 	return (

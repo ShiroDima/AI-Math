@@ -7,7 +7,7 @@ const Thumbnail = ({ imgSrc, fileName }) => {
 
     function deleteUploadedFile() {
         axios
-            .delete(`http://localhost:8000/image_delete?file_name=${fileName}`)
+            .delete(`http://localhost:5000/image_delete?file_name=${fileName}`)
             .then((response) => {
                 if (response.status === 200) {
                     deleteFileCloud(
