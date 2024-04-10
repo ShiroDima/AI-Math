@@ -1,21 +1,27 @@
 import { useState, useEffect, useRef } from "react";
+import Image from 'next/image'
 import Message from "@/components/Message.jsx";
+import Thumbnail from "@/components/Thumbnail.jsx"
 import axios from "axios";
 import {
 	PaperAirplaneIcon,
-	UploadIcon,
-	ChevronUpIcon,
+	UploadIcon
 } from "@heroicons/react/solid";
+
+import {PhotographIcon} from "@heroicons/react/outline"
+
 import { useUploadedFileContext } from "@/context/UploadedFileContext.js";
-import UploadedFile from "@/components/UploadedFile.jsx";
+
 
 const ChatRoom = () => {
 	// to get the messages and store it here
 	const [messages, setMessages] = useState([]);
 	// Current input field value
 	const [text, setText] = useState("");
+
 	// is send button enabled or not
 	const [sendButton, setSendButton] = useState(false);
+
 	// Uploaded files
 	const { uploadedFiles, addFile, addFileCloud, uploadedFilesCloud } =
 		useUploadedFileContext();
@@ -85,7 +91,7 @@ const ChatRoom = () => {
 
 		let config = {
 			method: "post",
-			url: "http://localhost:5000/question",
+			url: "http://localhost:8000/question",
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -100,7 +106,7 @@ const ChatRoom = () => {
 
 		let formatConfig = {
 			method: "post",
-			url: "http://localhost:5000/format",
+			url: "http://localhost:8000/format",
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -163,17 +169,18 @@ const ChatRoom = () => {
 			.catch((error) => console.log(error));
 	}
 
-	async function uploadImage(formData, file) {
+	function uploadImage(formData, file) {
+		// console.log()
 		axios
-			.put(`http://localhost:5000/image_upload`, formData)
+			.put(`http://localhost:8000/image_upload`, formData)
 			.then(function (response) {
 				console.log(response.data);
 				addFileCloud(response.data);
 				addFile(file);
 			})
-			// .finally(() => {
-			//     console.log(uploadedFilesCloud)
-			// })
+			.finally(() => {
+				document.getElementById('custom-file-picker').value = ""
+			})
 			.catch(function (error) {
 				console.log(error);
 			});
@@ -235,62 +242,30 @@ const ChatRoom = () => {
 			</div>
 
 			{/* input form */}
-			<div className="min-w-[300px] md:w-[60%] lg:w-[70%] xl:w-[40%] sm:w-[90%] flex justify-center my-5 fixed bottom-[10px] xl:left-[30%] lg:left-[14%] md:left-[10%] left-[5%]">
+			<div className="min-w-[300px] md:w-[60%] lg:w-[70%] xl:w-[40%] sm:w-[90%] flex my-5 fixed bottom-[10px] xl:left-[30%] lg:left-[14%] md:left-[10%] left-[5%]">
 				<form
 					ref={formRef}
-					className="sticky w-full bottom-0 z-50 bg-zinc-100 dark:text-black h-16 flex justify-between gap-4 border-solid border-2 shadow-2xl rounded-lg relative"
+					className={`sticky w-full bottom-0 z-50 bg-zinc-100 dark:text-black ${uploadedFilesCloud.length !== 0 ? 'h-36 max-h-36' : 'h-16'} flex flex-col border-solid border-2 shadow-2xl rounded-lg relative`}
 					onSubmit={sendMessage}
 					onDragEnter={handleDragIn}
 					onDrop={(event) => handleDrop(event)}
 					onDragLeave={handleDragOut}
-					// onDragOver={handleDragIn}
+					// onDragOver={handleDragIn} flex justify-start p-2 w-full bg-slate-200
 				>
-					<textarea
-						ref={messageInputRef}
-						type="text"
-						// onInput={(event) => {
-						// 	event.target.style.height = "100%";
-						// 	event.target.style.height =
-						// 		event.target.scrollHeight + "px";
-						// }}
-						placeholder="Type your question..."
-						value={text}
-						onChange={(event) => {
-							setText(event.target.value);
-							setSendButton(true);
-						}}
-						// flex resize-none items-start max-w-full w-full h-10 lg:max-w-screen-md p-2 placeholder-black text-black outline-none resize-none scrollbar-hide bg-transparent
-						className="block w-full resize-none h-full rounded-l-lg outline-none scrollbar-hide text-left py-5 px-4"
-					></textarea>
-
-					<div className={"flex h-full items-center justify-center"}>
-						<div className={"flex flex-row items-center h-full"}>
-							<button
-								className={`p-2 ${
-									!text
-										? "text-black"
-										: "bg-green-600 text-black"
-								} ${
-									sendButton
-										? "cursor-pointer"
-										: "cursor-not-allowed"
-								} rounded-full flex items-center`}
-								type="submit"
-								onClick={sendMessage}
-							>
-								<PaperAirplaneIcon
-									className={`w-6 h-6 rotate-90`}
-								/>
-							</button>
-						</div>
-						<div className={"flex flex-row items-center h-full"}>
+					<div className={`${uploadedFilesCloud.length !== 0 ? 'bg-zinc-100 flex w-full gap-4 p-2 justify-start h-[55%]' : 'hidden'}`}>
+						{
+							uploadedFilesCloud.map((file, idx) => <Thumbnail key={idx} imgSrc={file.url} fileName={file.name} />)
+						}
+					</div>
+					<div className={`flex w-full ${uploadedFilesCloud.length !== 0 ? 'items-center h-[40%]' : 'h-full'}`}>
+						<div className={"flex flex-row items-center h-full w-[5%]"}>
 							<input
 								className={"p-2"}
 								id="custom-file-picker"
 								type={"file"}
-								onChange={(event) => {
+								onInput={(event) => {
 									setFileName(event.target.files[0].name);
-									// console.log(typeof)
+									// console.log(event.target.files[0].name)
 									// addFile(event.target.files[0])
 									let formData = new FormData();
 									formData.append(
@@ -310,33 +285,51 @@ const ChatRoom = () => {
 								htmlFor="custom-file-picker"
 								className={"p-2 bg-none cursor-pointer"}
 							>
-								<UploadIcon className={`w-6 h-6`} />
+								<PhotographIcon className={`w-6 h-6`} />
 							</label>
 						</div>
-						<div
-							className={`flex flex-row items-center ${
-								uploadedFiles.length >= 1 ? "" : "hidden"
-							} h-full`}
+
+						<textarea
+							ref={messageInputRef}
+							type="text"
+							// onInput={(event) => {
+							// 	event.target.style.height = "100%";
+							// 	event.target.style.height =
+							// 		event.target.scrollHeight + "px";
+							// }}
+							placeholder="Type your question..."
+							value={text}
+							onChange={(event) => {
+								setText(event.target.value);
+								setSendButton(true);
+							}}
+							// flex resize-none items-start max-w-full w-full h-10 lg:max-w-screen-md p-2 placeholder-black text-black outline-none resize-none scrollbar-hide bg-transparent
+							className={`bg-zinc-100 block w-[87%] resize-none h-full rounded-l-lg outline-none scrollbar-hide text-left ${uploadedFilesCloud.length !==0 ? 'py-4' : 'py-5'} px-1`}
 						>
-							<ChevronUpIcon
-								className={`w-8 h-8 cursor-pointer`}
-								id={"showFilesIcon"}
-								onClick={(event) => showUploadedFiles(event)}
-							/>
+
+						</textarea>
+
+						<div className={"flex h-full items-center justify-center w-[5%]"}>
+							<div className={"flex flex-row items-center h-full"}>
+								<button
+									className={`p-2 ${
+										!text
+											? "text-black"
+											: "bg-green-600 text-black"
+									} ${
+										sendButton
+											? "cursor-pointer"
+											: "cursor-not-allowed"
+									} rounded-2xl flex items-center`}
+									type="submit"
+									onClick={sendMessage}
+								>
+									<PaperAirplaneIcon
+										className={`w-5 h-5 rotate-90`}
+									/>
+								</button>
+							</div>
 						</div>
-					</div>
-					{/* h-[150px] max-h-[150px] right-[-10%] top-[-260%] */}
-					<div
-						id={"uploadedFiles"}
-						className={`absolute ${
-							uploadedFiles.length === 0 ? "hidden" : ""
-						} hidden w-[200px]  overflow-y-auto flex flex-col-reverse items-center gap-2 h-full -right-20 -top-20`}
-					>
-						{uploadedFiles.map((file, idx) => {
-							return (
-								<UploadedFile key={idx} fileName={file.name} />
-							);
-						})}
 					</div>
 				</form>
 			</div>
