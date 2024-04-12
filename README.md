@@ -1,4 +1,4 @@
-# AI-Solver
+# AI-STEM-Solver
 
 A website that allows for users to query the system for solution to STEM  problems and get back step by step solutions.
 
