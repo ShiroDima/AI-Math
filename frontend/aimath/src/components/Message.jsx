@@ -85,7 +85,7 @@ const Message = ({ data }) => {
 						ref={textRef}
 					>
 					</div>
-					{!isUser && data.data==="" ? <Skeleton duration={2} inline={true} containerClassName={"h-full"} className={"h-full"} /> : null}
+					{!isUser && data.data==="" ? <Skeleton duration={2} count={5} inline={true} containerClassName={"h-full"} /> : null}
 				</div>
 
 			</section>

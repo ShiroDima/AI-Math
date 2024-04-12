@@ -22,7 +22,7 @@ export default function Home() {
 		<main className="flex h-screen flex-col items-center justify-between px-3 pt-5">
 			<Script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" />
 			<Script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" />
-			<SkeletonTheme baseColor="#FFF" highlightColor="#C7C8CC" >
+			<SkeletonTheme  baseColor="#FFF" highlightColor="#C7C8CC" >
 				<ChatRoom />
 			</SkeletonTheme>
 		</main>
