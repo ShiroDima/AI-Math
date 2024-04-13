@@ -7,12 +7,17 @@ import {
 	PaperAirplaneIcon,
 } from "@heroicons/react/solid";
 import {BounceLoader} from "react-spinners";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {PhotographIcon} from "@heroicons/react/outline"
 
 import { useUploadedFileContext } from "@/context/UploadedFileContext.js";
 
 
 const ChatRoom = () => {
+	// let URL = process.env.NEXT_PUBLIC_API_URL
+	let URL = 'http://localhost:5000'
+
 	// to get the messages and store it here
 	const [messages, setMessages] = useState([]);
 	// Current input field value
@@ -76,9 +81,8 @@ const ChatRoom = () => {
 
 
 
-		let URL = process.env.NEXT_PUBLIC_API_URL
 
-		console.log(URL)
+
 
 		let config = {
 			method: "post",
@@ -133,10 +137,20 @@ const ChatRoom = () => {
 						scrollToBottom();
 					})
 					.catch(function (error) {
+						toast.error('An error occurred! Please try again', {
+							position: 'top-left',
+							className: 'w-[800px]',
+						})
 						console.log(error);
 					});
 			})
-			.catch((error) => console.log(error));
+			.catch((error) => {
+				console.log(error)
+				toast.error('An error occurred! Please try again', {
+					position: 'top-left',
+					className: 'w-[800px]',
+				})
+			});
 
 	}
 
@@ -147,7 +161,7 @@ const ChatRoom = () => {
 			// 'Content-Type': 'multipart/form-data',
 		}
 
-		let url = `${process.env.NEXT_PUBLIC_API_URL}/image_upload`
+		let url = `${URL}/image_upload`
 
 		axios
 			.put(url, formData, { headers })
@@ -161,6 +175,10 @@ const ChatRoom = () => {
 				setIsUploading(prev => !prev)
 			})
 			.catch(function (error) {
+				toast.error('An error occurred while trying to upload the image! Please try again', {
+					position: 'top-left',
+					className: 'w-[800px]',
+				})
 				console.log(error);
 			});
 	}
@@ -298,6 +316,8 @@ const ChatRoom = () => {
 					</div>
 				</form>
 			</div>
+
+			<ToastContainer autoClose={3000}/>
 		</div>
 	);
 };

@@ -1,6 +1,8 @@
 import { XIcon } from "@heroicons/react/solid";
 import axios from "axios";
 import {useUploadedFileContext} from "@/context/UploadedFileContext";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Thumbnail = ({ imgSrc, fileName }) => {
     const { uploadedFiles, deleteFile, uploadedFilesCloud, deleteFileCloud } = useUploadedFileContext();
@@ -29,7 +31,13 @@ const Thumbnail = ({ imgSrc, fileName }) => {
                     );
                 }
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                toast.error('An error occurred! Please try again', {
+                    position: 'top-left',
+                    className: 'w-[800px]',
+                })
+                console.log(error)
+            });
     }
 
     return (
@@ -45,6 +53,7 @@ const Thumbnail = ({ imgSrc, fileName }) => {
                 className={"absolute transition bg-contain bg-center ease-in-out delay-150 w-8 h-8 top-3.5 left-3 opacity-0 hover:opacity-100"}
                 onClick={deleteUploadedFile}
             />
+            <ToastContainer />
         </div>
     )
 }
