@@ -15,8 +15,8 @@ import { useUploadedFileContext } from "@/context/UploadedFileContext.js";
 
 
 const ChatRoom = () => {
-	// let URL = process.env.NEXT_PUBLIC_API_URL
-	let URL = 'http://localhost:5000'
+	let URL = process.env.NEXT_PUBLIC_API_URL
+	// let URL = 'http://localhost:5000'
 
 	// to get the messages and store it here
 	const [messages, setMessages] = useState([]);
