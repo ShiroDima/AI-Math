@@ -62,7 +62,7 @@ export default function Home() {
 		})
 
         axios
-            .get(`http://localhost:8000/new-game?mode=${diff}`)
+            .get(`${process.env.NEXT_PUBLIC_API_URL}/new-game?mode=${diff}`)
             .then(response => {
                 setGrid(response.data.grid)
                 let search_words = response.data.search_words.length > 10 ? response.data.search_words.slice(0, 11) : response.data.search_words
