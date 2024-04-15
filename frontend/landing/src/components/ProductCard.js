@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+
 import Link from "next/link";
 
 export default function ProductCard({ imgSrc, name, desc, index }) {
@@ -27,8 +27,8 @@ export default function ProductCard({ imgSrc, name, desc, index }) {
 						height={150}
 					/>
 				</div>
-				<div className="p-4 h-[40%]">
-					<span className="text-[25px] cursor-default">{name}</span>
+				<div className="p-4 h-[40%] flex flex-col gap-5">
+					<span className="text-[20px] cursor-default">{name}</span>
 					<p className="text-[12px]">{desc}</p>
 				</div>
 			</div>
