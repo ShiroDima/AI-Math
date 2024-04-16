@@ -42,7 +42,7 @@ const ChatRoom = () => {
 	const messageInputRef = useRef(null);
 
 	// useEffect(() => {
-	// 	setMessages([{role: "User", data: "Integral of 2x?"}, {role: "AI", data: ""}])
+	// 	setMessages([{role: "User", data: "Integral of $2x$?"}, {role: "AI", data: "The integral of $2x$ is $x^2$."}, {role: "User", data: "Integral of $2x$?"}, {role: "AI", data: "The integral of $2x$ is $x^2$."}])
 	// }, [])
 
 	// Scroll every time as we send the messages
@@ -78,10 +78,6 @@ const ChatRoom = () => {
 		// 			? uploadedFilesCloud.map((file) => file.url)
 		// 			: null,
 		// });
-
-
-
-
 
 
 		let config = {
@@ -139,7 +135,7 @@ const ChatRoom = () => {
 					.catch(function (error) {
 						toast.error('An error occurred! Please try again', {
 							position: 'top-left',
-							className: 'w-[800px]',
+							className: 'w-[70%] md:w-[800px] text-[8px] md:text-[12px]',
 						})
 						console.log(error);
 					});
@@ -148,7 +144,7 @@ const ChatRoom = () => {
 				console.log(error)
 				toast.error('An error occurred! Please try again', {
 					position: 'top-left',
-					className: 'w-[800px]',
+					className: 'w-[70%] md:w-[800px] text-[8px] md:text-[12px]',
 				})
 			});
 
@@ -175,9 +171,9 @@ const ChatRoom = () => {
 				setIsUploading(prev => !prev)
 			})
 			.catch(function (error) {
-				toast.error('An error occurred while trying to upload the image! Please try again', {
+				toast.error('An error occurred while trying to upload the image! Please try again.', {
 					position: 'top-left',
-					className: 'w-[800px]',
+					className: 'w-[70%] md:w-[600px] text-[8px] md:text-[12px]',
 				})
 				console.log(error);
 			});
@@ -206,7 +202,7 @@ const ChatRoom = () => {
 	return (
 		<div className="flex flex-col w-full gap-0 h-screen relative lg:mx-auto lg:my-0 ">
 			{/* main Chat content */}
-			<div className="flex flex-col px-12 overflow-x-hidden scrollbar-hide h-[90%] w-full max-w-[1500px] mx-auto pb-4">
+			<div className="flex flex-col md:px-12 overflow-x-hidden scrollbar-hide h-[90%] w-full max-w-screen md:max-w-[1500px] md:mx-auto pb-4">
 				{messages &&
 					messages.map((message, i) => {
 						return (
@@ -238,10 +234,10 @@ const ChatRoom = () => {
 							uploadedFilesCloud.map((file, idx) => <Thumbnail key={idx} imgSrc={file.url} fileName={file.name} />)
 						}
 					</div>
-					<div className={`flex w-full ${uploadedFilesCloud.length !== 0 ? 'items-center h-[40%]' : 'h-full'}`}>
-						<div className={"flex flex-row items-center h-full w-[5%]"}>
+					<div className={`flex justify-around w-full ${uploadedFilesCloud.length !== 0 ? 'items-center h-[40%]' : 'h-full'}`}>
+						<div className={"flex flex-row items-center h-full w-fit"}>
 							<input
-								className={"p-2"}
+								className={"p-1"}
 								id="custom-file-picker"
 								type={"file"}
 								onChange={(event) => {
@@ -265,7 +261,7 @@ const ChatRoom = () => {
 							/>
 							<label
 								htmlFor="custom-file-picker"
-								className={"p-2 bg-none cursor-pointer"}
+								className={"p-1 bg-none cursor-pointer"}
 							>
 								{(isUploading && <BounceLoader size={20} color={"#000"} />)}
 								{!isUploading && <PhotographIcon className={`w-6 h-6`} />}
@@ -287,15 +283,15 @@ const ChatRoom = () => {
 								setSendButton(true);
 							}}
 							// flex resize-none items-start max-w-full w-full h-10 lg:max-w-screen-md p-2 placeholder-black text-black outline-none resize-none scrollbar-hide bg-transparent
-							className={`bg-zinc-100 block w-[87%] resize-none h-full rounded-l-lg outline-none scrollbar-hide text-left ${uploadedFilesCloud.length !==0 ? 'py-4' : 'py-5'} px-1`}
+							className={`bg-zinc-100 block w-[75%] md:w-[87%] resize-none h-full rounded-l-lg outline-none scrollbar-hide text-left ${uploadedFilesCloud.length !==0 ? 'py-4' : 'py-5'} px-1`}
 						>
 
 						</textarea>
 
-						<div className={"flex h-full items-center justify-center w-[5%]"}>
+						<div className={"flex h-full items-center justify-center w-fit"}>
 							<div className={"flex flex-row items-center h-full"}>
 								<button
-									className={`p-2 ${
+									className={`p-1 ${
 										!text
 											? "text-black"
 											: "bg-green-600 text-black"
@@ -317,7 +313,7 @@ const ChatRoom = () => {
 				</form>
 			</div>
 
-			<ToastContainer autoClose={3000}/>
+			<ToastContainer autoClose={2000}/>
 		</div>
 	);
 };

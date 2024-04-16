@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import renderMathInElement from "katex/contrib/auto-render";
 
 // eslint-disable-next-line react/prop-types
 const Message = ({ data }) => {
@@ -66,16 +67,16 @@ const Message = ({ data }) => {
 			throwOnError: false,
 		});
 		// });
-	});
+	}, []);
 
 	return (
 		<div
-			className={`w-full ${bg} min-w-[340px] ${
+			className={`w-full ${bg} md:min-w-[340px] ${
 				!isUser ? "mb-5" : "mb-1"
 			} shadow-lg border-solid border-2 ${!isUser && data.data==="" ? "min-h-36" : "h-fit"}`}
 		>
-			<section className={`w-full h-full max-h-fit p-2 flex`}>
-				<div className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] bg-slate-900 flex justify-center items-center">
+			<section className={`w-full h-full max-h-fit p-2 text-[10px] md:text-[15px] flex`}>
+				<div className="w-[30px] p-2 md:p-0 h-[30px] md:w-[50px] md:h-[50px] bg-slate-900 flex justify-center items-center">
 					{data.role}
 				</div>
 				<div className={`sm:w-[50%] w-full md:w-[90%] ml-1 md:ml-5 md:col-span-11`}>
