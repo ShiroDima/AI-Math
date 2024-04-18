@@ -11,7 +11,7 @@ let productDetails = [
 		imgSrc: "/images/thumbnail/word_search.png",
 		shortDesc: 'AI powered word search web app',
 		longDesc: "A webapp that uses AI to generate words suitable for different class ranges and then uses an algorithm to generate a word search grid.",
-		exampleImg: [],
+		exampleImg: ['/images/search/example_1.png', '/images/search/example_2.png', '/images/search/example_3.png'],
 		hasApp: true
 	},
 	{
