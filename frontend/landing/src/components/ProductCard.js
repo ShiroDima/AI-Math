@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-export default function ProductCard({ imgSrc, name, desc, index }) {
+export default function ProductCard({ imgSrc, name, desc, index, hasApp }) {
 	let URL = name.includes("search")
 		? "https://word-search.dywno4kca4mbu.amplifyapp.com"
 		: "https://ai-math.dywno4kca4mbu.amplifyapp.com/";
@@ -17,7 +17,7 @@ export default function ProductCard({ imgSrc, name, desc, index }) {
 			className="bg-slate-800 w-[250px] h-[450px] text-white flex flex-col cursor-pointer"
 
 		>
-			<div onClick={handleClick} className={`h-[90%]`}>
+			<div className={`h-[90%]`}>
 				<div className="border-b-2 border-b-white m-2 px-2 pt-2 pb-5 h-[60%]">
 					<img
 						src={imgSrc}
