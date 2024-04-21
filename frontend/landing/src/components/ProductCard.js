@@ -15,7 +15,6 @@ export default function ProductCard({ imgSrc, name, desc, index, hasApp }) {
 	return (
 		<div
 			className="bg-slate-800 w-[250px] h-[450px] text-white flex flex-col cursor-pointer"
-
 		>
 			<div className={`h-[90%]`}>
 				<div className="border-b-2 border-b-white m-2 px-2 pt-2 pb-5 h-[60%]">

@@ -4,17 +4,26 @@ import {useRouter} from 'next/navigation'
 import ProductDescription from "@/components/ProductDescription";
 
 const Product = ({ product }) => {
-
     let URL;
     if(product.name.includes('AI')){
         URL = 'https://ai-math.quantumai.expert'
     }else if(product.name.includes('Search')){
         URL = 'https://word-search.quantumai.expert'
     }else {
-        URL = 'http://quantumai-expert-lb-499712256.eu-central-1.elb.amazonaws.com:7000'
+        URL = 'https://apps.quantumai.expert:7000'
         // sm:after:left-8 sm:after:bottom-0
     }
-    console.log(URL)
+
+    const handleView = () => {
+        const auth = localStorage.getItem('login')
+        if(auth) {
+            location.replace(URL)
+        }else{
+            localStorage.setItem('nextURL', URL)
+            location.replace('/login')
+        }
+    }
+
     return (
         <div className={`max-w-full h-full max-h-full flex items-center flex-col md:flex-row m-2`}>
             <div
@@ -27,7 +36,7 @@ const Product = ({ product }) => {
                                 md:my-0 flex-row md:flex-col justify-around md:justify-center items-center`
                 }>
                     <img alt={'app-image'} src={product.imgSrc} className={`bg-contain md:mb-20 ${product.hasApp ? 'md:w-[150px] md:h-[150px]' : 'md:w-[250px] md:h-[250px]'}`} width={50} height={70}/>
-                    {product.hasApp && <button onClick={() => window.location.assign(URL)} className={`p-2 md:p-5 w-[50%] md:w-[80%] text-center bg-green-500 md:mt-22`}>View App</button>}
+                    {product.hasApp && <button onClick={handleView} className={`p-2 md:p-5 w-[50%] md:w-[80%] text-center bg-green-500 md:mt-22`}>View App</button>}
                 </div>
             </div>
             <ProductDescription title={product.name} desc={product.longDesc} exampleImg={product.exampleImg} />

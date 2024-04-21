@@ -46,8 +46,6 @@ let productDetails = [
 export default function Home() {
 	const searchParams = useSearchParams()
 
-	console.log(searchParams.get('app'))
-
 	return (
 		<div className="flex h-fit md:h-[90%] flex-col flex-col md:flex-row items-start justify-start p-14 gap-4 relative">
 			{

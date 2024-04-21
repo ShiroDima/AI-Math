@@ -9,10 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity": "^3.556.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.556.0",
+    "@heroicons/react": "^1.0.6",
+    "aws-sdk": "^2.1603.0",
+    "react-toastify": "^10.0.5",
     "next": "14.0.4",
     "react": "^18",
     "react-dom": "^18",
-    "@heroicons/react": "^1.0.6",
     "tailwind-scrollbar-hide": "^1.1.7"
   },
   "devDependencies": {
