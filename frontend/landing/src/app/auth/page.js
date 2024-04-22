@@ -2,41 +2,46 @@
 
 import {UserCircleIcon, LockClosedIcon} from '@heroicons/react/outline'
 import {useState} from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import AWS from 'aws-sdk'
-import {CognitoIdentityProviderClient, InitiateAuthCommand} from "@aws-sdk/client-cognito-identity-provider";
+import {login} from "@/app/auth/actions/loginAction";
 
-AWS.config.update({
-    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
-    region: process.env.NEXT_PUBLIC_COGNITO_REGION
-})
 
 const Login = ({ url }) => {
     const [password, setPassword] = useState('')
     const [username, setUsername] = useState('')
 
     const handleLogin = async () => {
-        let input = {
-            "AuthFlow": "USER_PASSWORD_AUTH",
-            "AuthParameters": {
-                "PASSWORD": password,
-                "USERNAME": username
-            },
-            "ClientId": process.env.NEXT_PUBLIC_CLIENT_ID
-        }
 
-        const cognito = new AWS.CognitoIdentityServiceProvider()
+        const auth = localStorage.getItem('AccessToken')
+        if(auth) {
+            location.assign('/')
+        }else{
+            let input = {
+                "AuthFlow": "USER_PASSWORD_AUTH",
+                "AuthParameters": {
+                    "PASSWORD": password,
+                    "USERNAME": username
+                },
+                "ClientId": process.env.NEXT_PUBLIC_CLIENT_ID
+            }
 
-        try {
-            await cognito.initiateAuth(input).promise();
-            localStorage.setItem('login', 'true')
-            url = localStorage.getItem('nextURL')
+            try {
+                let response = await login(input);
+                localStorage.setItem('AccessToken', response.AuthenticationResult.AccessToken)
+                let url = localStorage.getItem('nextURL')
 
-            localStorage.removeItem('nextURL')
+                localStorage.removeItem('nextURL')
 
-            location.assign(url)
-        }catch (error) {
-            console.log(error)
+                url ? location.assign(url) : location.assign('/')
+            }catch (error) {
+                console.log(error)
+                toast.error('An error occurred! Please try again', {
+                    position: 'top-left',
+                    className: 'w-[70%] md:w-[800px] text-[8px] md:text-[12px]',
+                })
+            }
         }
     }
 
@@ -77,10 +82,16 @@ const Login = ({ url }) => {
                         />
                     </div>
                 </div>
-                <div className={`h-10 bg-white w-[30%] flex justify-center items-center`}>
-                    <input type={'submit'} onClick={handleLogin} className={`text-slate-800 cursor-pointer w-full hover:bg-slate-800 hover:text-white hover:border-white hover:border-2 h-full`}/>
+                <div className={`h-10 w-[30%] flex justify-center items-center`}>
+                    <button
+                        onClick={handleLogin}
+                        className={`text-slate-800 bg-white cursor-pointer w-full hover:bg-slate-800 hover:text-white hover:border-white hover:border-2 h-full`}
+                    >
+                        Login
+                    </button>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     )
 }

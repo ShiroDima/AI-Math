@@ -15,12 +15,12 @@ const Product = ({ product }) => {
     }
 
     const handleView = () => {
-        const auth = localStorage.getItem('login')
+        const auth = localStorage.getItem('AccessToken')
         if(auth) {
             location.replace(URL)
         }else{
             localStorage.setItem('nextURL', URL)
-            location.replace('/login')
+            location.replace('/auth')
         }
     }
 
@@ -35,8 +35,12 @@ const Product = ({ product }) => {
                 <div className={`w-full h-full p-2 md:p-10 flex gap-5 md:gap-0 my-2 
                                 md:my-0 flex-row md:flex-col justify-around md:justify-center items-center`
                 }>
-                    <img alt={'app-image'} src={product.imgSrc} className={`bg-contain md:mb-20 ${product.hasApp ? 'md:w-[150px] md:h-[150px]' : 'md:w-[250px] md:h-[250px]'}`} width={50} height={70}/>
-                    {product.hasApp && <button onClick={handleView} className={`p-2 md:p-5 w-[50%] md:w-[80%] text-center bg-green-500 md:mt-22`}>View App</button>}
+                    <img alt={'app-image'} src={product.imgSrc} className={`bg-contain md:mb-16 ${product.hasApp ? 'md:w-[150px] md:h-[150px]' : 'md:w-[250px] md:h-[250px]'}`} width={50} height={70}/>
+                    {product.hasApp && <button onClick={handleView}
+                                               className={`p-2 md:p-5 w-[50%] md:w-[80%] text-center bg-white text-slate-800  hover:bg-slate-800 hover:text-white hover:border-white hover:border-2`}>
+                                            View App
+                                        </button>
+                    }
                 </div>
             </div>
             <ProductDescription title={product.name} desc={product.longDesc} exampleImg={product.exampleImg} />

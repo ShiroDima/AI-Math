@@ -1,7 +1,7 @@
 "use client"
 
 import {ArrowNarrowRightIcon} from '@heroicons/react/outline'
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {ArrowNarrowLeftIcon} from "@heroicons/react/solid";
 
 
@@ -13,15 +13,15 @@ const ProductDescription = ({title, desc, exampleImg}) => {
             <div className={`flex flex-col justify-center items-center w-full ${showExamples ? 'h-[90%]' : 'h-[60%]'}`}>
                 <h1 className={`text-center w-full text-4xl mb-5 h-[20%]`}>{title}</h1>
                 {
-                    !showExamples && <div className={`my-1 text-xl`}>
+                    !showExamples && <div className={`my-1 text-xl w-fit flex flex-col items-center gap-5 justify-center`}>
                         <p id={'product-description'}>{desc}</p>
+                        {
+                            title.includes('Voice') && <audio controls className={`w-[90%] bg-white text-slate-800`} src={'/audio/voice_assistant_demo.wav'} />
+                        }
                     </div>
                 }
                 {
                     showExamples && <div className={`flex gap-5 snap-x snap-mandatory w-[80%] overflow-x-scroll md:h-[80%]`}>
-                        {/*<img alt={'product-example'} src={'/images/aimath/example_1.png'} className={`snap-always snap-center bg-contain min-w-full min-h-full`}/>*/}
-                        {/*<img alt={'product-example'} src={'/images/aimath/example_2.png'} className={`snap-always snap-center bg-contain min-w-full min-h-full`}/>*/}
-                        {/*<img alt={'product-example'} src={'/images/aimath/example_3.png'} className={`snap-always snap-center bg-contain min-w-full min-h-full`}/>*/}
                         {exampleImg.map((imgSrc, idx) => {
                             return <img key={idx} alt={'product-example'} src={imgSrc} className={`snap-always snap-center bg-contain min-w-full min-h-full`}/>
                         })}

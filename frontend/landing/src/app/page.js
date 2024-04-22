@@ -15,9 +15,9 @@ let productDetails = [
 		hasApp: true
 	},
 	{
-		name: "AI Stem Solver",
+		name: "AI STEM Solver",
 		imgSrc: "/images/thumbnail/ai_math.png",
-		shortDesc: 'AI powered problem solver',
+		shortDesc: 'AI problem solver for Science, Technology, Engineering and Mathematics (STEM)',
 		longDesc: "A website that allows for users to query the system for solution to STEM problems and get back step by step solutions.\n" +
 			"\n" +
 			"It also allows the user to upload the questions as images and have the system provide solutions.",

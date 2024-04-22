@@ -31,7 +31,7 @@ export default function ProductCard({ imgSrc, name, desc, index, hasApp }) {
 					<p className="text-[12px]">{desc}</p>
 				</div>
 			</div>
-			<div className={'bg-gray-400 flex justify-center items-center h-[10%]'}>
+			<div className={'flex justify-center items-center h-[10%] bg-white text-slate-800 hover:bg-slate-800 hover:text-white hover:border-white hover:border-2'}>
 				<Link href={`/?app=${index}`}>Learn More</Link>
 			</div>
 		</div>
