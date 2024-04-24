@@ -9,9 +9,6 @@ s3_client = boto3.client('s3', aws_access_key_id=os.getenv('ACCESS_KEY'),
                          aws_secret_access_key=os.getenv('SECRET_ACCESS_KEY'))
 
 
-#
-# BUCKET_NAME = 'web-avatar'
-
 def upload_image(image: Union[bytes, str], key: str) -> str:
     BUCKET_NAME = os.getenv("BUCKET_NAME")
     # KEY = f"user_{random.randint(a=1, b=100)}.jpg"

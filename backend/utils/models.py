@@ -1,6 +1,6 @@
 from typing import Optional, List, Tuple
-
-from pydantic import BaseModel
+from langchain_core.pydantic_v1 import BaseModel as BM, Field as F
+from pydantic import BaseModel, Field
 
 
 class UserQuestion(BaseModel):
@@ -15,3 +15,9 @@ class AIAnswer(BaseModel):
 
 class ImageUpload(BaseModel):
     image_data: Tuple[str, bytes]
+
+
+class CheckMathExpression(BM):
+    """Checks the given string if there is any math expression in it"""
+
+    exist: bool = F(description="Boolean yes or no value indicating whether or not the given string has a math expression in it.")

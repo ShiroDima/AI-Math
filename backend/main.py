@@ -6,7 +6,7 @@ from typing import Optional, List, Dict, Tuple
 from dotenv import load_dotenv
 import openai
 
-from ai import create_ai, create_ai_with_image, create_format_ai
+from ai import create_ai, create_ai_with_image, format_question
 from ai.utils import format_response, format_question
 from fastapi import FastAPI, UploadFile, File, status, Response
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -96,13 +96,9 @@ def image_delete(file_name: str):
 
 @app.post("/format")
 async def question_format(question: UserQuestion):
-    ai = create_format_ai()
-    formatted_question = ai.invoke({"question": question.question})
-    # formatted_question = create_format_ai(question=question.question)
-    # formatted_question = format_question(question=question.question)
-
+    formatted_question = format_question(question=question)
     return formatted_question
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=5000, workers=1)
+    uvicorn.run("main:app", host="0.0.0.0", port=5000, workers=1, reload=False)

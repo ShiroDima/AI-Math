@@ -2,22 +2,25 @@ import os
 from typing import List
 
 from dotenv import load_dotenv
-# from langchain.llms import OpenAI
-from langchain.chains import ConversationChain, LLMChain
-from langchain_community.chat_models import ChatOpenAI
+from langchain_core.output_parsers.openai_tools import PydanticToolsParser
+from langchain.chains import ConversationChain
+from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain.prompts import ChatPromptTemplate
 from langchain.prompts import FewShotChatMessagePromptTemplate
 from langchain.prompts import PromptTemplate
 from langchain.prompts.few_shot import FewShotPromptTemplate
-from langchain.schema import HumanMessage, BaseMessage
+from langchain.schema import HumanMessage
 from langchain.schema.runnable import RunnableSerializable
 from langchain.schema.output_parser import StrOutputParser
 from .utils.load_examples import load_json
+from utils.models import CheckMathExpression, UserQuestion
 
 load_dotenv()
 
 examples = load_json("./ai/examples.json")
+tools = [CheckMathExpression]
+
 
 
 def create_ai() -> ConversationChain:
@@ -63,14 +66,34 @@ def create_format_ai() -> RunnableSerializable[dict, str]:
     # prompt = PromptTemplate(input_variables=['question'],
     # template="""Format the following to latex using only '$' AND NEVER USE '$$'\n{question}""")
 
-    prompt = PromptTemplate.from_template("""Give me back this question formatted to latex using only '$' AND NEVER USE '$$' around ONLY math expressions.\n
-    DO NOT ATTEMPT THE QUESTION. ONLY FORMAT MATH EXPRESSIONS TO LATEX AND DON'T ADD ANYTHING THAT WAS NOT IN THE ORIGINAL QUESTION.\n
+    prompt = PromptTemplate.from_template("""Does the following question have a math expression in it:\n
     {question}""")
-    llm = ChatOpenAI(
-        model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=500)
+    llm = ChatOpenAI(model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=500)
     # llm = OpenAI(model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=500)
+    tool_llm = llm.bind_tools(tools)
 
-    return prompt | llm | StrOutputParser()
+    return prompt | tool_llm
+
+
+# def format_question(question: UserQuestion):
+#     ai = create_format_ai()
+#     formatted_question = ai.invoke({"question": question.question})
+    
+#     exist: bool = formatted_question.tool_calls[0]['args']['exist']
+
+#     if exist:
+#         prompt = PromptTemplate.from_template("""
+#                                             Give me back this question formatted to latex using only '$' AND NEVER USE '$$' around ONLY math expressions.\n
+#                                             DO NOT ATTEMPT THE QUESTION.\n
+                                              
+#                                             Question: {question}
+#                                                 """)
+#         chain = prompt | ChatOpenAI(model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=500) | StrOutputParser()
+
+#         return chain.invoke({"question": question.question})
+    
+#     return question.question
+
 
 
 def create_ai_with_image(image_urls: List[str]):

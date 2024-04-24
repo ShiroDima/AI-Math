@@ -15,8 +15,8 @@ import { useUploadedFileContext } from "@/context/UploadedFileContext.js";
 
 
 const ChatRoom = () => {
-	let URL = process.env.NEXT_PUBLIC_API_URL
-	// let URL = 'http://localhost:5000'
+	// let URL = process.env.NEXT_PUBLIC_API_URL
+	let URL = 'http://localhost:5000';
 
 	// to get the messages and store it here
 	const [messages, setMessages] = useState([]);
@@ -27,8 +27,7 @@ const ChatRoom = () => {
 	const [sendButton, setSendButton] = useState(false);
 
 	// Uploaded files
-	const { uploadedFiles, addFile, addFileCloud, uploadedFilesCloud } =
-		useUploadedFileContext();
+	const { uploadedFiles, addFile, addFileCloud, uploadedFilesCloud } = useUploadedFileContext();
 
 	// current uploaded file name
 	const [fileName, setFileName] = useState("");
@@ -78,7 +77,6 @@ const ChatRoom = () => {
 		// 			? uploadedFilesCloud.map((file) => file.url)
 		// 			: null,
 		// });
-
 
 		let config = {
 			method: "post",

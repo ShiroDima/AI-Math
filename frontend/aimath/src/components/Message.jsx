@@ -1,7 +1,7 @@
 // "use client";
 import { useEffect, useRef } from "react";
-import Skeleton from 'react-loading-skeleton'
-import 'react-loading-skeleton/dist/skeleton.css'
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import renderMathInElement from "katex/contrib/auto-render";
 
 // eslint-disable-next-line react/prop-types
@@ -17,21 +17,22 @@ const Message = ({ data }) => {
 	const bg = isUser ? "bg-white" : "bg-white";
 
 	function formatText() {
-		console.info(textRef.current)
-		if(isUser){
+		console.info(textRef.current);
+		if (isUser) {
 			textRef.current.innerHTML = data.data;
-		}else{
+		} else {
 			let text = "";
 			data.data.split("\n").forEach((str) => {
 				text += str + " <br> ";
 			});
-			let html = <div
-				id={'ai-response'}
-				className={`w-full px-1 md:grid-cols-1 items-start ${bg} md:px-2 outline-none text-left text-black leading-loose`}
-
-			>
-				{text}
-			</div>
+			let html = (
+				<div
+					id={"ai-response"}
+					className={`w-full px-1 md:grid-cols-1 items-start ${bg} md:px-2 outline-none text-left text-black leading-loose`}
+				>
+					{text}
+				</div>
+			);
 
 			textRef.current.innerHTML = html;
 		}
@@ -42,14 +43,13 @@ const Message = ({ data }) => {
 		// console.log(katex.renderToString(data.data))
 		if (isUser) {
 			textRef.current.innerHTML = data.data;
-		}else{
+		} else {
 			let text = "";
 			data.data.split("\n").forEach((str) => {
 				text += str + " <br> ";
 			});
 			textRef.current.innerHTML = text;
 		}
-
 	}, [isUser, data, textRef]);
 
 	// Typesetting the latex with Katex
@@ -67,30 +67,42 @@ const Message = ({ data }) => {
 			throwOnError: false,
 		});
 		// });
-	}, []);
+	}, [data]);
 
 	return (
 		<div
 			className={`w-full ${bg} md:min-w-[340px] ${
 				!isUser ? "mb-5" : "mb-1"
-			} shadow-lg border-solid border-2 ${!isUser && data.data==="" ? "min-h-36" : "h-fit"}`}
+			} shadow-lg border-solid border-2 ${
+				!isUser && data.data === "" ? "min-h-36" : "h-fit"
+			}`}
 		>
-			<section className={`w-full h-full max-h-fit p-2 text-[10px] md:text-[15px] flex`}>
+			<section
+				className={`w-full h-full max-h-fit p-2 text-[10px] md:text-[15px] flex`}
+			>
 				<div className="w-[30px] p-2 md:p-0 h-[30px] md:w-[50px] md:h-[50px] bg-slate-900 flex justify-center items-center">
 					{data.role}
 				</div>
-				<div className={`sm:w-[50%] w-full md:w-[90%] ml-1 md:ml-5 md:col-span-11`}>
+				<div
+					className={`sm:w-[50%] w-full md:w-[90%] ml-1 md:ml-5 md:col-span-11`}
+				>
 					<div
-						id={'ai-response'}
-						className={`w-full px-1 md:grid-cols-1 items-start ${bg} ${!isUser && data.data==="" ? "hidden" : ""} md:px-2 outline-none text-left text-black leading-loose`}
+						id={"ai-response"}
+						className={`w-full px-1 md:grid-cols-1 items-start ${bg} ${
+							!isUser && data.data === "" ? "hidden" : ""
+						} md:px-2 outline-none text-left text-black leading-loose`}
 						ref={textRef}
-					>
-					</div>
-					{!isUser && data.data==="" ? <Skeleton duration={2} count={5} inline={true} containerClassName={"h-full"} /> : null}
+					></div>
+					{!isUser && data.data === "" ? (
+						<Skeleton
+							duration={2}
+							count={5}
+							inline={true}
+							containerClassName={"h-full"}
+						/>
+					) : null}
 				</div>
-
 			</section>
-
 		</div>
 	);
 };
