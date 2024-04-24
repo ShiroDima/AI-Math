@@ -9,7 +9,7 @@ export const SearchWords = () => {
 	const { foundWords } = useGameContext();
 
 
-	useEffect(() => {console.log(foundWords)}, [searchWords, foundWords]);
+	useEffect(() => {}, [searchWords, foundWords]);
 
 	return (
 		<div className="overflow-y-auto no-scrollbar grid place-items-center grid-row-10 grid-cols-1 w-[30%] border-2 border-black h-full max-h-[700px]">
