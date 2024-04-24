@@ -1,22 +1,20 @@
 import { useState, useEffect, useRef } from "react";
-import Image from 'next/image'
+import Image from "next/image";
 import Message from "@/components/Message.jsx";
-import Thumbnail from "@/components/Thumbnail.jsx"
+import Thumbnail from "@/components/Thumbnail.jsx";
 import axios from "axios";
-import {
-	PaperAirplaneIcon,
-} from "@heroicons/react/solid";
-import {BounceLoader} from "react-spinners";
+import { PaperAirplaneIcon } from "@heroicons/react/solid";
+import { BounceLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {PhotographIcon} from "@heroicons/react/outline"
+import { PhotographIcon } from "@heroicons/react/outline";
 
 import { useUploadedFileContext } from "@/context/UploadedFileContext.js";
 
-
 const ChatRoom = () => {
-	// let URL = process.env.NEXT_PUBLIC_API_URL
-	let URL = 'http://localhost:5000';
+	// TODO Change back to environment variable
+	let URL = process.env.NEXT_PUBLIC_API_URL;
+	// let URL = "http://localhost:5000";
 
 	// to get the messages and store it here
 	const [messages, setMessages] = useState([]);
@@ -27,7 +25,8 @@ const ChatRoom = () => {
 	const [sendButton, setSendButton] = useState(false);
 
 	// Uploaded files
-	const { uploadedFiles, addFile, addFileCloud, uploadedFilesCloud } = useUploadedFileContext();
+	const { uploadedFiles, addFile, addFileCloud, uploadedFilesCloud } =
+		useUploadedFileContext();
 
 	// current uploaded file name
 	const [fileName, setFileName] = useState("");
@@ -65,18 +64,7 @@ const ChatRoom = () => {
 		// Checking if text or image is empty then don't send the message
 		if (!text) return null;
 
-		// setMessages((prevState) => [
-		// 	...prevState,
-		// 	{ role: "User", data: text },
-		// ]);
-
-		// let data = JSON.stringify({
-		// 	question: text,
-		// 	image_link:
-		// 		uploadedFilesCloud.length !== 0
-		// 			? uploadedFilesCloud.map((file) => file.url)
-		// 			: null,
-		// });
+		setMessages((prevState) => [...prevState, { role: "User", data: "" }]);
 
 		let config = {
 			method: "post",
@@ -95,7 +83,7 @@ const ChatRoom = () => {
 
 		let formatConfig = {
 			method: "post",
-			url:`${URL}/format`,
+			url: `${URL}/format`,
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -107,10 +95,18 @@ const ChatRoom = () => {
 
 		axios(formatConfig)
 			.then((response) => {
+				setMessages((prevState) =>
+					prevState.map((item, idx) => {
+						if (idx === prevState.length - 1)
+							return { ...item, data: response.data };
+
+						return item;
+					})
+				);
+
 				setMessages((prevState) => [
 					...prevState,
-					{ role: "User", data: response.data },
-					{ role: "AI", data: "" }
+					{ role: "AI", data: "" },
 				]);
 			})
 			.finally(() => {
@@ -118,12 +114,18 @@ const ChatRoom = () => {
 					.then(function (response) {
 						console.log(response.data);
 						response.status === 200
-							? setMessages((prevState) => prevState.map((item, idx) => {
-								if(idx===prevState.length-1){
-									return {...item, data: response.data.answer_content}
-								}
-								return item
-							}))
+							? setMessages((prevState) =>
+									prevState.map((item, idx) => {
+										if (idx === prevState.length - 1) {
+											return {
+												...item,
+												data: response.data
+													.answer_content,
+											};
+										}
+										return item;
+									})
+							  )
 							: null;
 					})
 					.finally(() => {
@@ -131,21 +133,43 @@ const ChatRoom = () => {
 						scrollToBottom();
 					})
 					.catch(function (error) {
-						toast.error('An error occurred! Please try again', {
-							position: 'top-left',
-							className: 'w-[70%] md:w-[800px] text-[8px] md:text-[12px]',
-						})
+						toast.error("An error occurred! Please try again", {
+							position: "top-left",
+							className:
+								"w-[70%] md:w-[800px] text-[8px] md:text-[12px]",
+						});
 						console.log(error);
+						setMessages((prevState) =>
+							prevState.map((item, idx) => {
+								if (idx === prevState.length - 1) {
+									return {
+										...item,
+										data: "Error occured!",
+									};
+								}
+								return item;
+							})
+						);
 					});
 			})
 			.catch((error) => {
-				console.log(error)
-				toast.error('An error occurred! Please try again', {
-					position: 'top-left',
-					className: 'w-[70%] md:w-[800px] text-[8px] md:text-[12px]',
-				})
+				console.log(error);
+				toast.error("An error occurred! Please try again", {
+					position: "top-left",
+					className: "w-[70%] md:w-[800px] text-[8px] md:text-[12px]",
+				});
+				setMessages((prevState) =>
+					prevState.map((item, idx) => {
+						if (idx === prevState.length - 1) {
+							return {
+								...item,
+								data: "Error occured!",
+							};
+						}
+						return item;
+					})
+				);
 			});
-
 	}
 
 	function uploadImage(formData, file) {
@@ -153,9 +177,9 @@ const ChatRoom = () => {
 		//
 		const headers = {
 			// 'Content-Type': 'multipart/form-data',
-		}
+		};
 
-		let url = `${URL}/image_upload`
+		let url = `${URL}/image_upload`;
 
 		axios
 			.put(url, formData, { headers })
@@ -165,14 +189,18 @@ const ChatRoom = () => {
 				addFile(file);
 			})
 			.finally(() => {
-				document.getElementById('custom-file-picker').value = ""
-				setIsUploading(prev => !prev)
+				document.getElementById("custom-file-picker").value = "";
+				setIsUploading((prev) => !prev);
 			})
 			.catch(function (error) {
-				toast.error('An error occurred while trying to upload the image! Please try again.', {
-					position: 'top-left',
-					className: 'w-[70%] md:w-[600px] text-[8px] md:text-[12px]',
-				})
+				toast.error(
+					"An error occurred while trying to upload the image! Please try again.",
+					{
+						position: "top-left",
+						className:
+							"w-[70%] md:w-[600px] text-[8px] md:text-[12px]",
+					}
+				);
 				console.log(error);
 			});
 	}
@@ -220,26 +248,50 @@ const ChatRoom = () => {
 			<div className="min-w-[300px] md:w-[60%] lg:w-[70%] xl:w-[40%] sm:w-[90%] flex my-5 fixed bottom-[10px] xl:left-[30%] lg:left-[14%] md:left-[10%] left-[5%]">
 				<form
 					ref={formRef}
-					className={`sticky w-full bottom-0 z-50 bg-zinc-100 dark:text-black ${uploadedFilesCloud.length !== 0 ? 'h-36 max-h-36' : 'h-16'} flex flex-col border-solid border-2 shadow-2xl rounded-lg relative`}
+					className={`sticky w-full bottom-0 z-50 bg-zinc-100 dark:text-black ${
+						uploadedFilesCloud.length !== 0
+							? "h-36 max-h-36"
+							: "h-16"
+					} flex flex-col border-solid border-2 shadow-2xl rounded-lg relative`}
 					onSubmit={sendMessage}
 					onDragEnter={handleDragIn}
 					onDrop={(event) => handleDrop(event)}
 					onDragLeave={handleDragOut}
 					// onDragOver={handleDragIn} flex justify-start p-2 w-full bg-slate-200
 				>
-					<div className={`${uploadedFilesCloud.length !== 0 ? 'bg-zinc-100 flex w-full gap-4 p-2 justify-start h-[55%]' : 'hidden'}`}>
-						{
-							uploadedFilesCloud.map((file, idx) => <Thumbnail key={idx} imgSrc={file.url} fileName={file.name} />)
-						}
+					<div
+						className={`${
+							uploadedFilesCloud.length !== 0
+								? "bg-zinc-100 flex w-full gap-4 p-2 justify-start h-[55%]"
+								: "hidden"
+						}`}
+					>
+						{uploadedFilesCloud.map((file, idx) => (
+							<Thumbnail
+								key={idx}
+								imgSrc={file.url}
+								fileName={file.name}
+							/>
+						))}
 					</div>
-					<div className={`flex justify-around w-full ${uploadedFilesCloud.length !== 0 ? 'items-center h-[40%]' : 'h-full'}`}>
-						<div className={"flex flex-row items-center h-full w-fit"}>
+					<div
+						className={`flex justify-around w-full ${
+							uploadedFilesCloud.length !== 0
+								? "items-center h-[40%]"
+								: "h-full"
+						}`}
+					>
+						<div
+							className={
+								"flex flex-row items-center h-full w-fit"
+							}
+						>
 							<input
 								className={"p-1"}
 								id="custom-file-picker"
 								type={"file"}
 								onChange={(event) => {
-									setIsUploading(true)
+									setIsUploading(true);
 									setFileName(event.target.files[0].name);
 									let formData = new FormData();
 									formData.append(
@@ -261,8 +313,12 @@ const ChatRoom = () => {
 								htmlFor="custom-file-picker"
 								className={"p-1 bg-none cursor-pointer"}
 							>
-								{(isUploading && <BounceLoader size={20} color={"#000"} />)}
-								{!isUploading && <PhotographIcon className={`w-6 h-6`} />}
+								{isUploading && (
+									<BounceLoader size={20} color={"#000"} />
+								)}
+								{!isUploading && (
+									<PhotographIcon className={`w-6 h-6`} />
+								)}
 							</label>
 						</div>
 
@@ -281,13 +337,21 @@ const ChatRoom = () => {
 								setSendButton(true);
 							}}
 							// flex resize-none items-start max-w-full w-full h-10 lg:max-w-screen-md p-2 placeholder-black text-black outline-none resize-none scrollbar-hide bg-transparent
-							className={`bg-zinc-100 block w-[75%] md:w-[87%] resize-none h-full rounded-l-lg outline-none scrollbar-hide text-left ${uploadedFilesCloud.length !==0 ? 'py-4' : 'py-5'} px-1`}
+							className={`bg-zinc-100 block w-[75%] md:w-[87%] resize-none h-full rounded-l-lg outline-none scrollbar-hide text-left ${
+								uploadedFilesCloud.length !== 0
+									? "py-4"
+									: "py-5"
+							} px-1`}
+						></textarea>
+
+						<div
+							className={
+								"flex h-full items-center justify-center w-fit"
+							}
 						>
-
-						</textarea>
-
-						<div className={"flex h-full items-center justify-center w-fit"}>
-							<div className={"flex flex-row items-center h-full"}>
+							<div
+								className={"flex flex-row items-center h-full"}
+							>
 								<button
 									className={`p-1 ${
 										!text
@@ -311,7 +375,7 @@ const ChatRoom = () => {
 				</form>
 			</div>
 
-			<ToastContainer autoClose={2000}/>
+			<ToastContainer autoClose={2000} />
 		</div>
 	);
 };

@@ -93,10 +93,10 @@ const Message = ({ data }) => {
 						} md:px-2 outline-none text-left text-black leading-loose`}
 						ref={textRef}
 					></div>
-					{!isUser && data.data === "" ? (
+					{data.data === "" ? (
 						<Skeleton
 							duration={2}
-							count={5}
+							count={isUser ? 1 : 5}
 							inline={true}
 							containerClassName={"h-full"}
 						/>
