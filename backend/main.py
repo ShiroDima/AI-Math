@@ -6,7 +6,7 @@ from typing import Optional, List, Dict, Tuple
 from dotenv import load_dotenv
 import openai
 
-from ai import create_ai, create_ai_with_image, format_question
+from ai import get_ai_response, create_ai_with_image
 from ai.utils import format_response, format_question
 from fastapi import FastAPI, UploadFile, File, status, Response
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -45,20 +45,20 @@ async def post_question(question: UserQuestion):
 
         formatted_result = format_response(result.content)
     else:
-        ai = create_ai()
-        result = ai.predict(input=question.question)
+        print(get_ai_response(question=question.question, session_id='foobar'))
+        # result = ai.predict(input=question.question)
 
-        formatted_result = format_response(result)
+        # formatted_result = format_response(result)
 
-    if result != '':
-        return JSONResponse(
-            content=AIAnswer(**{"question_content": question.question, "answer_content": formatted_result}).dict()
-        )
-    else:
-        return JSONResponse(
-            content='No result',
-            status_code=status.HTTP_204_NO_CONTENT
-        )
+    # if result != '':
+    #     return JSONResponse(
+    #         content=AIAnswer(**{"question_content": question.question, "answer_content": formatted_result}).dict()
+    #     )
+    # else:
+    #     return JSONResponse(
+    #         content='No result',
+    #         status_code=status.HTTP_204_NO_CONTENT
+    #     )
 
 
 @app.put('/image_upload', status_code=status.HTTP_201_CREATED)
@@ -101,4 +101,4 @@ async def question_format(question: UserQuestion):
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=5000, workers=4, reload=False)
+    uvicorn.run("main:app", host="0.0.0.0", port=5000, workers=1, reload=True)

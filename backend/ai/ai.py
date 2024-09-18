@@ -1,20 +1,22 @@
 import os
 from typing import List
 
+from pydantic import UUID4
+
 from dotenv import load_dotenv
 from langchain_core.output_parsers.openai_tools import PydanticToolsParser
-from langchain.chains import ConversationChain
 from langchain_openai import ChatOpenAI
-from langchain.memory import ConversationSummaryBufferMemory
-from langchain.prompts import ChatPromptTemplate
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.prompts import FewShotChatMessagePromptTemplate
 from langchain.prompts import PromptTemplate
 from langchain.prompts.few_shot import FewShotPromptTemplate
 from langchain.schema import HumanMessage
 from langchain.schema.runnable import RunnableSerializable
 from langchain.schema.output_parser import StrOutputParser
+from langchain_mongodb import MongoDBChatMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
 from .utils.load_examples import load_json
-from utils.models import CheckMathExpression, UserQuestion
+from utils.models import CheckMathExpression, UserQuestion, QuestionSolution
 
 load_dotenv()
 
@@ -22,14 +24,24 @@ examples = load_json("./ai/examples.json")
 tools = [CheckMathExpression]
 
 
+def get_by_session_id(session_id: str):
+    return MongoDBChatMessageHistory(
+        connection_string='mongodb+srv://sdakarawak:<db_password>@cluster0.ccuz3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+        session_id=session_id,
+        database_name='chatHistory',
+        collection_name='History'
+    )
 
-def create_ai() -> ConversationChain:
-    chat_llm = ChatOpenAI(
+
+def get_ai_response(question: str, session_id: UUID4) -> str:
+    chat_llm = (ChatOpenAI(
         model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=4096)
+        .with_structured_output(QuestionSolution, strict=True)
+    )
     example_prompt = PromptTemplate(
         input_variables=["question", "answer"], template="Question: {question}\n{answer}")
 
-    prompt = FewShotPromptTemplate(
+    few_shot_prompt = FewShotPromptTemplate(
         examples=examples,
         example_prompt=example_prompt,
         prefix="""
@@ -47,19 +59,34 @@ def create_ai() -> ConversationChain:
         input_variables=["history", "input"]
     )
 
-    buffer_memory_fs = ConversationSummaryBufferMemory(
-        llm=chat_llm,
-        max_token_limit=os.environ["MAX_NUM_TOKENS"],
-        return_messages=True,
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", """
+                        You are a world class STEM problem solver.
+                        You provide clear, concise and highly detailed step by step solutions to problems you are asked to solve.
+             
+                        You are to return all solutions in latex with proper formatting.
+                        Use only simple latex as the result will be rendered in a browser and not a latex document.
+                        """),
+            MessagesPlaceholder(variable_name='history'),
+            few_shot_prompt,
+            HumanMessage(
+                content='{question}'
+            )
+        ]
     )
 
-    ai_fs = ConversationChain(
-        llm=chat_llm,
-        memory=buffer_memory_fs,
-        prompt=prompt
+    chain = RunnableWithMessageHistory(
+        prompt | chat_llm,
+        get_by_session_id,
+        input_messages_key='question',
+        history_messages_key='history'
     )
 
-    return ai_fs
+    return chain.ainvoke(
+        {'question': question},
+        config={'configurable': {'session_id': session_id}}
+    )
 
 
 def create_format_ai() -> RunnableSerializable[dict, str]:
@@ -68,31 +95,13 @@ def create_format_ai() -> RunnableSerializable[dict, str]:
 
     prompt = PromptTemplate.from_template("""Does the following question have a math expression in it:\n
     {question}""")
-    llm = ChatOpenAI(model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=500)
+    llm = (ChatOpenAI(model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=500)
+           .with_structured_output(QuestionSolution, strict=True)
+    )
     # llm = OpenAI(model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=500)
     tool_llm = llm.bind_tools(tools)
 
     return prompt | tool_llm
-
-
-# def format_question(question: UserQuestion):
-#     ai = create_format_ai()
-#     formatted_question = ai.invoke({"question": question.question})
-    
-#     exist: bool = formatted_question.tool_calls[0]['args']['exist']
-
-#     if exist:
-#         prompt = PromptTemplate.from_template("""
-#                                             Give me back this question formatted to latex using only '$' AND NEVER USE '$$' around ONLY math expressions.\n
-#                                             DO NOT ATTEMPT THE QUESTION.\n
-                                              
-#                                             Question: {question}
-#                                                 """)
-#         chain = prompt | ChatOpenAI(model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=500) | StrOutputParser()
-
-#         return chain.invoke({"question": question.question})
-    
-#     return question.question
 
 
 
