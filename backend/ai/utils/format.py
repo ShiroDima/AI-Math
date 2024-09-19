@@ -1,9 +1,9 @@
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.schema.output_parser import StrOutputParser
-from utils.models import UserQuestion
+from utils.models import UserQuestion, QuestionSolution
 import os
-
+from pydantic import BaseModel, Field
 
 def format_response(ai_response: str) -> str:
     # if '.\n' not in ai_response or ':\n' not in ai_response:
@@ -16,8 +16,33 @@ def format_prompt(prompt: str) -> str:
     pass
 
 
-def format_question(question: UserQuestion) -> str:
-    format_ai = ChatOpenAI(model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=500)
+class QuestionSolution(BaseModel):
+    question: str = Field(
+        description='''
+                    The question the user asked formatted into latex.
+                    All mathematical symbols and equations MUST be formatted to latex.
+    
+                    No overly complex latex because this will be rendered in a browser not a latex document.
+                    '''
+    )
+    
+    answer: str = Field(
+        description='''
+                    The solution to the question the user asked formatted into latex.
+                    It contains step by step VERY detailed instructions on how to solve the problem.
+                    It also contains explicit workings on the solution to the problem.
+                    All mathematical symbols and equations MUST be formatted to latex.
+    
+                    No overly complex latex because this will be rendered in a browser not a latex document.
+                    '''
+    )
+
+
+async def format_question(question: UserQuestion) -> str:
+    format_ai = (
+        ChatOpenAI(model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=500)
+        .with_structured_output(QuestionSolution, strict=True)
+    )
     template = """
                     Change the math text in the question I'm about to give you to latex and return the entire sentence with it.\n
                     If you're not sure whether something is math text or not, DO NOT touch it.\n
@@ -28,7 +53,7 @@ def format_question(question: UserQuestion) -> str:
                     """
 
     prompt = PromptTemplate(input_variables=["question"], template=template)
-    chain = prompt | format_ai | StrOutputParser()
-    formatted_question = chain.invoke({'question': question.question})
+    chain = prompt | format_ai
+    formatted_question: QuestionSolution = await chain.ainvoke({'question': question.question})
 
-    return formatted_question
+    return formatted_question.question

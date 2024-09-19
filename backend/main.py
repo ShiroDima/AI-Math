@@ -39,26 +39,15 @@ async def get_hello():
 
 @app.post("/question", status_code=status.HTTP_200_OK)
 async def post_question(question: UserQuestion):
+    # print(question)
     if question.image_links is not None:
         ai_vision = create_ai_with_image(question.image_links)
         result = await ai_vision.ainvoke({'input': question.question})
 
         formatted_result = format_response(result.content)
     else:
-        print(get_ai_response(question=question.question, session_id='foobar'))
-        # result = ai.predict(input=question.question)
-
-        # formatted_result = format_response(result)
-
-    # if result != '':
-    #     return JSONResponse(
-    #         content=AIAnswer(**{"question_content": question.question, "answer_content": formatted_result}).dict()
-    #     )
-    # else:
-    #     return JSONResponse(
-    #         content='No result',
-    #         status_code=status.HTTP_204_NO_CONTENT
-    #     )
+        return await get_ai_response(question=question.question, session_id='foobar')
+        
 
 
 @app.put('/image_upload', status_code=status.HTTP_201_CREATED)
@@ -96,7 +85,7 @@ def image_delete(file_name: str):
 
 @app.post("/format")
 async def question_format(question: UserQuestion):
-    formatted_question = format_question(question=question)
+    formatted_question = await format_question(question=question)
     return formatted_question
 
 

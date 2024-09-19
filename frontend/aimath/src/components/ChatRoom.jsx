@@ -13,8 +13,8 @@ import { useUploadedFileContext } from "@/context/UploadedFileContext.js";
 
 const ChatRoom = () => {
 	// TODO Change back to environment variable
-	let URL = process.env.NEXT_PUBLIC_API_URL;
-	// let URL = "http://localhost:5000";
+	// let URL = process.env.NEXT_PUBLIC_API_URL;
+	let URL = "http://localhost:5000";
 
 	// to get the messages and store it here
 	const [messages, setMessages] = useState([]);
@@ -120,7 +120,7 @@ const ChatRoom = () => {
 											return {
 												...item,
 												data: response.data
-													.answer_content,
+													.answer,
 											};
 										}
 										return item;
@@ -340,7 +340,7 @@ const ChatRoom = () => {
 							className={`bg-zinc-100 block w-[75%] md:w-[87%] resize-none h-full rounded-l-lg outline-none scrollbar-hide text-left ${
 								uploadedFilesCloud.length !== 0
 									? "py-4"
-									: "py-5"
+									: "py-4"
 							} px-1`}
 						></textarea>
 

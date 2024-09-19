@@ -1,6 +1,10 @@
+numpy
 fastapi
 langchain
 langchain-openai
+langchain-community
+langchain-core
+langchain-mongodb
 openai
 tiktoken
 uvicorn
