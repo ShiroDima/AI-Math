@@ -56,7 +56,7 @@ const ChatRoom = () => {
 	// It send the message to the API for processing
 	async function sendMessage(event) {
 		event.preventDefault();
-		setText("");
+		
 		// messageInputRef.current.style.height = "100%";
 
 		setSendButton(false);
@@ -64,8 +64,8 @@ const ChatRoom = () => {
 		// Checking if text or image is empty then don't send the message
 		if (!text) return null;
 
-		setMessages((prevState) => [...prevState, { role: "User", data: "" }]);
-
+		setMessages((prevState) => [...prevState, { role: "User", data: text }]);
+		setText("");
 		let config = {
 			method: "post",
 			url: `${URL}/question`,
@@ -81,83 +81,35 @@ const ChatRoom = () => {
 			}),
 		};
 
-		let formatConfig = {
-			method: "post",
-			url: `${URL}/format`,
-			headers: {
-				"Content-Type": "application/json",
-			},
-			data: JSON.stringify({
-				question: text,
-				image_link: null,
-			}),
-		};
-
-		axios(formatConfig)
-			.then((response) => {
-				setMessages((prevState) =>
-					prevState.map((item, idx) => {
-						if (idx === prevState.length - 1)
-							return { ...item, data: response.data };
-
-						return item;
-					})
-				);
-
-				setMessages((prevState) => [
-					...prevState,
-					{ role: "AI", data: "" },
-				]);
-			})
-			.finally(() => {
-				axios(config)
-					.then(function (response) {
-						console.log(response.data);
-						response.status === 200
-							? setMessages((prevState) =>
-									prevState.map((item, idx) => {
-										if (idx === prevState.length - 1) {
-											return {
-												...item,
-												data: response.data
-													.answer,
-											};
-										}
-										return item;
-									})
-							  )
-							: null;
-					})
-					.finally(() => {
-						setSendButton(false);
-						scrollToBottom();
-					})
-					.catch(function (error) {
-						toast.error("An error occurred! Please try again", {
-							position: "top-left",
-							className:
-								"w-[70%] md:w-[800px] text-[8px] md:text-[12px]",
-						});
-						console.log(error);
-						setMessages((prevState) =>
+		axios(config)
+			.then(function (response) {
+				console.log(response.data);
+				response.status === 200
+					? setMessages((prevState) =>
 							prevState.map((item, idx) => {
 								if (idx === prevState.length - 1) {
 									return {
 										...item,
-										data: "Error occured!",
+										data: response.data
+											.answer,
 									};
 								}
 								return item;
 							})
-						);
-					});
+						)
+					: null;
 			})
-			.catch((error) => {
-				console.log(error);
+			.finally(() => {
+				setSendButton(false);
+				scrollToBottom();
+			})
+			.catch(function (error) {
 				toast.error("An error occurred! Please try again", {
 					position: "top-left",
-					className: "w-[70%] md:w-[800px] text-[8px] md:text-[12px]",
+					className:
+						"w-[70%] md:w-[800px] text-[8px] md:text-[12px]",
 				});
+				console.log(error);
 				setMessages((prevState) =>
 					prevState.map((item, idx) => {
 						if (idx === prevState.length - 1) {
