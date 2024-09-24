@@ -32,7 +32,6 @@ class QuestionSolution(BaseModel):
                     All mathematical symbols and equations MUST be formatted to latex.
                     All latex must be contained within `$` or `$$` symbols, AND ADD COMPULSORILY, appropriate latex spacing using `\\;\\;` symbols, so as to be formatted properly on the webpage
     
-                    No overly complex latex because this will be rendered in a browser not a latex document.
                     '''
     )
 

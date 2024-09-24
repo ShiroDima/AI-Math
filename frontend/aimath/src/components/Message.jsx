@@ -11,7 +11,7 @@ import { CharacterTextSplitter } from 'langchain/text_splitter'
 
 
 const splitter = new CharacterTextSplitter({
-	chunkSize: 5,
+	chunkSize: 7,
 	chunkOverlap: 0,
 	separator: ' '
 })
@@ -25,6 +25,7 @@ const streamText = async function* (text) {
 
 const streamGenerator = async (text, setLabel) => {
 	for await (const t of streamText(text)){
+		console.info(t)
 		setLabel(prev => prev + ' ' + t)
 		await new Promise(resolve => setTimeout(resolve, 200));
 	}
@@ -44,7 +45,7 @@ const Message = ({ data }) => {
 
 	// // Typesetting the latex with Katex
 	useEffect(() => {
-		(async () => await streamGenerator(data.data, setText))()
+		!isUser ? (async () => await streamGenerator(data.data, setText))() : setText(data.data)
 	}, [data]);
 
 	return (

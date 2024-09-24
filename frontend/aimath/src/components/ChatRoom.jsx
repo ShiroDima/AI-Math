@@ -14,7 +14,7 @@ import { useUploadedFileContext } from "@/context/UploadedFileContext.js";
 const ChatRoom = () => {
 	// TODO Change back to environment variable
 	// let URL = process.env.NEXT_PUBLIC_API_URL;
-	let URL = "http://localhost:5000";
+	let URL = "http://localhost:5001";
 
 	// to get the messages and store it here
 	const [messages, setMessages] = useState([]);
@@ -63,9 +63,19 @@ const ChatRoom = () => {
 
 		// Checking if text or image is empty then don't send the message
 		if (!text) return null;
-
-		setMessages((prevState) => [...prevState, { role: "User", data: text }]);
 		setText("");
+		console.log(text)
+		setMessages((prevState) => [...prevState, { role: "User", data: text }]);
+		// setMessages((prevState) => prevState.map((item, idx) => {
+		// 	if(idx === prevState.length - 1){
+		// 		return {
+		// 			...item,
+		// 			data: text
+		// 		}
+		// 	}
+		// 	return item
+		// }));
+		setMessages((prevState) => [...prevState, { role: "AI", data: '' }])
 		let config = {
 			method: "post",
 			url: `${URL}/question`,
