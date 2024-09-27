@@ -44,9 +44,9 @@ const Message = ({ data }) => {
 	const bg = isUser ? "bg-white" : "bg-white";
 
 	// // Typesetting the latex with Katex
-	useEffect(() => {
-		!isUser ? (async () => await streamGenerator(data.data, setText))() : setText(data.data)
-	}, [data]);
+	// useEffect(() => {
+	// 	!isUser ? (async () => await streamGenerator(data.data, setText))() : setText(data.data)
+	// }, [data]);
 
 	return (
 		<div
@@ -75,10 +75,10 @@ const Message = ({ data }) => {
 							/>
 						) : (
 							<div
-								id={"ai-response"}
+								id={"content"}
 								className={`w-full px-1 md:grid-cols-1 items-start ${bg} ${
 									!isUser && data.data === "" ? "hidden" : ""
-								} md:px-2 outline-none text-left text-black leading-loose flex flex-col items-start`}
+								} md:px-2 outline-none text-left text-black leading-loose flex flex-col items-start text-wrap`}
 							>
 								<Remark
 									remarkPlugins={[remarkMath]}
@@ -86,11 +86,11 @@ const Message = ({ data }) => {
 									rehypePlugins={[rehypeSanitize, rehypeKatex]}
 									rehypeReactOptions={{
 										components: {
-											p: (props) => <p className='flex content-start' {...props} />,
+											div: (props) => <div className='text-left ' {...props} />,
 										}
 									}}
 								>
-									{text}
+									{data.data}
 								</Remark>
 							</div>
 						)
