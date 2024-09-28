@@ -101,7 +101,7 @@ async def get_ai_response(question: str, session_id: UUID4) -> QuestionSolution:
     return response
 
 
-def create_ai_with_image(image_urls: List[str]):
+def get_ai_response_from_image(question: str, session_id: UUID4, image_urls: List[str]):
     messages = [
         {
             'type': 'text',
@@ -121,7 +121,7 @@ def create_ai_with_image(image_urls: List[str]):
     } for image_url in image_urls]
 
     chat_llm = ChatOpenAI(
-        model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=4096)
+        model=os.environ["PRETRAINED_MODEL_NAME"], temperature=0.0, max_tokens=4096).with_structured_output(QuestionSolution, strict=True)
     ex_prompt = ChatPromptTemplate.from_messages(
         [
             ('human', '{question}'),
@@ -145,22 +145,33 @@ def create_ai_with_image(image_urls: List[str]):
                         If you do not know the solution to a problem, say so rather than attempting to solve it.
                         """),
             few_shot_prompt,
+            MessagesPlaceholder(variable_name='history'),
             HumanMessage(
                 content=messages
             )
         ]
     )
 
-    # buffer_memory_fs = ConversationSummaryBufferMemory(
-    #     llm=chat_llm,
-    #     max_token_limit=os.environ["MAX_NUM_TOKENS"],
-    #     return_messages=True,
-    # )
-    #
-    # ai_vision = ConversationChain(
-    #     llm=chat_llm,
-    #     memory=buffer_memory_fs,
-    #     prompt=prompt
-    # )
+    chain = RunnableWithMessageHistory(
+        (prompt | chat_llm),
+        get_by_session_id,
+        input_messages_key='question',
+        history_messages_key='history'
+    )
 
-    return prompt | chat_llm
+    # print(store)
+    _history = [HumanMessage(content=question)]
+    history = get_by_session_id(session_id)
+
+    
+
+    response: QuestionSolution = chain.invoke(
+        {'question': question, 'history': history},
+        config={'configurable': {'session_id': session_id}}
+    )
+
+    _history.extend([AIMessage(content=response.answer)])
+
+    history.add_messages(_history)
+
+    return response

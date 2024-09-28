@@ -6,7 +6,7 @@ from typing import Optional, List, Dict, Tuple
 from dotenv import load_dotenv
 import openai
 
-from ai import get_ai_response, create_ai_with_image
+from ai import get_ai_response, get_ai_response_from_image
 from ai.utils import format_response, format_question
 from fastapi import FastAPI, UploadFile, File, status, Response
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from utils.encode_image import encode_image
-from utils.models import ImageUpload, UserQuestion, AIAnswer
+from utils.models import UserQuestion, QuestionSolution
 from utils.s3_store import upload_image, delete_image
 
 app = FastAPI()
@@ -38,13 +38,10 @@ async def get_hello():
 
 
 @app.post("/question", status_code=status.HTTP_200_OK)
-async def post_question(question: UserQuestion):
+async def post_question(question: UserQuestion) -> QuestionSolution:
     # print(question)
     if question.image_links is not None:
-        ai_vision = create_ai_with_image(question.image_links)
-        result = await ai_vision.ainvoke({'input': question.question})
-
-        formatted_result = format_response(result.content)
+        return await get_ai_response_from_image(question=question.question, image_urls=question.image_links, session_id='foobar')
     else:
         return await get_ai_response(question=question.question, session_id='foobar')
         
