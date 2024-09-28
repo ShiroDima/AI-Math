@@ -11,3 +11,4 @@ uvicorn
 python-multipart
 boto3
 chromadb
+python-dotenv
